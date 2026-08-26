@@ -11,11 +11,11 @@ const isValid = (username)=>{
 let userswithsamename = users.filter((user) =>{
     return (user.username === username);
 });
-return userswithsamename.length > 0; //Returns true if username is avaiable
+return userswithsamename.length === 0; //Returns true if username is avaiable
 }
 
 //Check if username and password match any registered user
-const authenticatedUser = (username,password)=>{ 
+const authenticatedUser = (username,password) => { 
 //write code to check if username and password match the one we have in records.
 
 let validusers =users.filter((user) => {
@@ -70,13 +70,13 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   }
   //Ensure reviews object exists
   if (!books[isbn].reviews) {
-    books[isb].reviews = {};
+    books[isbn].reviews = {};
   }
 
   //Add or update review
   books[isbn].reviews[username] = review;
 
-    return res.status(200).json({ message: 'Review for ISBN ${isbn} successfully added/updated.'});
+    return res.status(200).json({ message: `Review for ISBN ${isbn} successfully added/updated.`});
 });
 
 
