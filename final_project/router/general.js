@@ -27,7 +27,7 @@ public_users.post("/register", (req,res) => {
 public_users.get('/',function (req, res) {
   //Write your code here
   //Returns the complete books object formatted as a JSON String
-  return res.status(200).json.send(JSON.stringify(books, null, 4));
+  return res.status(200).send(JSON.stringify(books, null, 4));
 });
 
 // Get book details based on ISBN

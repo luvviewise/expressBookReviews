@@ -24,7 +24,15 @@ app.use("/customer/auth/*", function auth(req, res, next) {
                 // Attach user credentials to the request object and proceed
                 req.user = user;   // user = { username: "..." }
                 next();
-           
+            } else {
+                return res.status(403).json({ message: "User not authenticated" });
+            }
+        });
+
+    } else {
+        return res.status(403).json({ message: "User not logged in" });
+    }
+});
  
 const PORT =5000;
 
