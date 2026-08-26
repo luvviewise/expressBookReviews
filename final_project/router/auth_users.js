@@ -5,18 +5,19 @@ const regd_users = express.Router();
 
 let users = [];
 
-const isValid = (username)=>{ //returns boolean
-//write code to check is the username is valid
 //Check if the username already exists in the users array
-let userswithssamename = user.filter((user) =>{
-    return (user.username === username && user.password === password);
+const isValid = (username)=>{ 
+//write code to check is the username is valid
+let userswithsamename = users.filter((user) =>{
+    return (user.username === username);
 });
-return userswithssamename.length > 0;
+return userswithsamename.length > 0; //Returns true if username is avaiable
 }
 
-const authenticatedUser = (username,password)=>{ //returns boolean
+//Check if username and password match any registered user
+const authenticatedUser = (username,password)=>{ 
 //write code to check if username and password match the one we have in records.
-//Check if username and passwordmatch any registered user
+
 let validusers =users.filter((user) => {
     return (user.username === username && user.password === password);
 });
@@ -24,7 +25,7 @@ return validusers.length > 0;
 }
 
 //only registered users can login
-//Login route for regisstered users
+//Login route for registered users
 regd_users.post("/login", (req,res) => {
   //Write your code here
   const {username, password} =req.body;
@@ -55,7 +56,7 @@ regd_users.post("/login", (req,res) => {
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
   const isbn = req.params.isbn;
-  const review = req.query.review; // note or req.body.review
+  const review = req.query.review || req.body.review; // note or req.body.review
   const username = req.user.username; //extracted from verified JWT token 
 
   if (!review) {
@@ -63,14 +64,38 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   }
 
   //Check if the book exists in your database
-  if (book[isbn])  {
+  if (!books[isbn] )  {
     //Add or update the review under the current user's username
-    books[isbn] ["reviews"] [username] = review;
-    return res.status(200).json ({ message: 'Review for ISBN ${isbn} successfully added/updated.'});
-  } else {
-    return res.status (404).json({ message: "Books not found" });
+    return res.status(404).json({message: "Book not found" });
+  }
+  //Ensure reviews object exists
+  if (!books[isbn].reviews) {
+    books[isb].reviews = {};
   }
 
+  //Add or update review
+  books[isbn].reviews[username] = review;
+
+    return res.status(200).json({ message: 'Review for ISBN ${isbn} successfully added/updated.'});
+});
+
+
+// Delete a book review
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+    const isbn = req.params.isbn;
+    const username = req.user.username; // or req.user.username depending on JWT structure
+
+    if (books[isbn]) {
+        let bookReviews = books[isbn].reviews;
+        if (bookReviews && bookReviews[username]) {
+            delete bookReviews[username];
+            return res.status(200).json({ message: `Reviews for the ISBN ${isbn} posted by the user ${username} deleted.` });
+        } else {
+            return res.status(404).json({ message: "No review found for this user on this book" });
+        }
+    } else {
+        return res.status(404).json({ message: "Book not found" });
+    }
 });
 
 module.exports.authenticated = regd_users;
