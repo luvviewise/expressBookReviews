@@ -107,23 +107,25 @@ public_users.get('/review/:isbn', (req, res) => {
 public_users.get('/async/books', async function (req, res) {
     try {
       const response = await axios.get("http://localhost:5000/");
-      return res.status(200).json(response.data);
-    } catch (error) {
-      return res.status(500).json({ message: "Error fetching books", error: error.message });
+      return res.status(200).send(JSON.stringify(response.data, null, 4));
+    } catch {
+      return res.status(500).json({ message: "Error" });
     }
   });
+  
   //Get book details based on ISBN using Promise Callbacks
-  public_users.get('/promise/isbn/:isbn', function (req, res) {
+public_users.get('/promise/isbn/:isbn', function (req, res) {
     const isbn = req.params.isbn;
   
     axios.get(`http://localhost:5000/isbn/${isbn}`)
       .then((response) => {
-        return res.status(200).json(response.data);
+        return res.status(200).send(JSON.stringify(response.data, null, 4));
       })
-      .catch((error) => {
-        return res.status(500).json({ message: "Error fetching book by ISBN", error: error.message });
+      .catch(() => {
+        return res.status(404).json({ message: "Book not found" });
       });
   });
+  
 
 
 module.exports.general = public_users;
