@@ -11,7 +11,7 @@ const isValid = (username)=>{
 let userswithsamename = users.filter((user) =>{
     return (user.username === username);
 });
-return userswithsamename.length === 0; //Returns true if username is avaiable
+return userswithsamename.length > 0; //Returns true if username is avaiable
 }
 
 //Check if username and password match any registered user
@@ -45,7 +45,7 @@ regd_users.post("/login", (req,res) => {
         accessToken, username
     };
 
-    return res.status(200).send("User successful loggedin");
+    return res.status(200).send("User successful logged in");
 } else {
     
     return res.status(403).json({ message: "Invalid Login. Check username and password" });
@@ -76,14 +76,32 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   //Add or update review
   books[isbn].reviews[username] = review;
 
-    return res.status(200).json({ message: `Review for ISBN ${isbn} successfully added/updated.`});
+    return res.status(200).json({ message: `Review for ISBN ${isbn} successfully posted.`});
 });
+
+router.get('/review/:isbn', (req, res) => {
+    const isbn = req.params.isbn;
+  
+    // Book does not exist
+    if (!books[isbn]) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+  
+    // No reviews exist
+    if (!books[isbn].reviews || Object.keys(books[isbn].reviews).length === 0) {
+      return res.json({ message: "No review found for this user on this book" });
+    }
+  
+    // Reviews exist
+    return res.json(books[isbn].reviews);
+  });
+  
 
 
 // Delete a book review
 regd_users.delete("/auth/review/:isbn", (req, res) => {
     const isbn = req.params.isbn;
-    const username = req.user.username; // or req.user.username depending on JWT structure
+    const username = req.user.username; 
 
     if (books[isbn]) {
         let bookReviews = books[isbn].reviews;
