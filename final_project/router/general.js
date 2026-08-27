@@ -32,7 +32,7 @@ public_users.get('/',function (req, res) {
 });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
+public_users.get('/isbn/:isbn', function (req, res) {
   //Write your code here
   const isbn = req.params.isbn;
   
@@ -50,12 +50,9 @@ public_users.get('/isbn/:isbn',function (req, res) {
       });
     }
 
-  if (books[isbn]) {
-    return res.status(200).send(JSON.stringify(books[isbn], null, 4));
-} else {
-  return res.status(404).json({message: "Books not found"});
-}
- });
+  // Reviews exist
+  return res.status(200).json(books[isbn]);
+});
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
@@ -107,7 +104,7 @@ public_users.get('/review/:isbn', (req, res) => {
 });
 
 //Get the list of books available in the shop using Async-Await
-public_users.get('/', async function (req, res) {
+public_users.get('/async/books', async function (req, res) {
     try {
       const response = await axios.get("http://localhost:5000/");
       return res.status(200).json(response.data);
@@ -116,7 +113,7 @@ public_users.get('/', async function (req, res) {
     }
   });
   //Get book details based on ISBN using Promise Callbacks
-public_users.get('/isbn/:isbn', function (req, res) {
+  public_users.get('/promise/isbn/:isbn', function (req, res) {
     const isbn = req.params.isbn;
   
     axios.get(`http://localhost:5000/isbn/${isbn}`)
