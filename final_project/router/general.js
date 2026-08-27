@@ -35,6 +35,20 @@ public_users.get('/',function (req, res) {
 public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
   const isbn = req.params.isbn;
+  
+    // Book does not exist
+    if (!books[isbn]) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+  
+    // No reviews exist
+    if (!books[isbn].reviews || Object.keys(books[isbn].reviews).length === 0) {
+      return res.status(200).json({
+        author: books[isbn].author,
+        title: books[isbn].title,
+        message: "No review found for this user on this book"
+      });
+    }
 
   if (books[isbn]) {
     return res.status(200).send(JSON.stringify(books[isbn], null, 4));
@@ -101,7 +115,7 @@ public_users.get('/', async function (req, res) {
       return res.status(500).json({ message: "Error fetching books", error: error.message });
     }
   });
-  // Task 11: Get book details based on ISBN using Promise Callbacks
+  //Get book details based on ISBN using Promise Callbacks
 public_users.get('/isbn/:isbn', function (req, res) {
     const isbn = req.params.isbn;
   
@@ -113,18 +127,6 @@ public_users.get('/isbn/:isbn', function (req, res) {
         return res.status(500).json({ message: "Error fetching book by ISBN", error: error.message });
       });
   });
-  
-  // Get book details based on ISBN using Promise Callbacks
-  public_users.get('/isbn/:isbn', function (req, res) {
-    const isbn = req.params.isbn;
-  
-    axios.get(`http://localhost:5000/isbn/${isbn}`)
-      .then((response) => {
-        return res.status(200).json(response.data);
-      })
-      .catch((error) => {
-        return res.status(500).json({ message: "Error fetching book by ISBN", error: error.message });
-      });
-  });
+
 
 module.exports.general = public_users;
