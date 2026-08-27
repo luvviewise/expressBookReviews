@@ -8,22 +8,24 @@ const axios =require('axios');
 
 //Register a new user
 public_users.post("/register", (req,res) => {
-    const { username, password } = req.body;
-  
-    if (!username || !password) {
-        return res.status(400).json({ message: "Username and password are required" });
-    }
-  
-    // username available = true
-    if (!isValid(username)) {
-        return res.status(400).json({ message: "Username already exists" });
-    }
-  
-    users.push({ username, password });
-  
-    return res.status(200).json({message: "User registered successfully"});
-  });
-  
+  //Write your code here
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+      return res.status(400).json({ message: "Username and password are required" });
+  }
+
+  let isValid = (username) => {
+  let usersWithSameName = users.filter(user => user.username === username);
+  return usersWithSameName.length === 0; // true means username is available
+};
+
+
+  users.push({ username, password });
+
+  return res.status(200).json({message: "User registered successfully"});
+});
+
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
   //Write your code here
