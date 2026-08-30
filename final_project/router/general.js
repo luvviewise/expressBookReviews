@@ -15,12 +15,9 @@ public_users.post("/register", (req,res) => {
       return res.status(400).json({ message: "Username and password are required" });
   }
 
-  let isValid = (username) => {
-  let usersWithSameName = users.filter(user => user.username === username);
-  return usersWithSameName.length === 0; // true means username is available
-};
-
-
+  if (!isValid(username)) {
+    return res.status(400).json({ message: "Username already exists" });
+}
   users.push({ username, password });
 
   return res.status(200).json({message: "User registered successfully"});
@@ -138,7 +135,25 @@ public_users.get('/async/title/:title', function (req, res) {
             return res.status(404).json({ message: "Title not found" });
         });
 });
-  
+
+//Creating a promise method. The promise will get resolved when timer times out after 6 seconds.
+let myPromise = new Promise((resolve,reject) => {
+    setTimeout(() => {
+      resolve("Promise resolved")
+    },6000)});
+
+//Console log before calling the promise
+console.log("Before calling promise");
+
+//Call the promise and wait for it to be resolved and then print a message.
+myPromise.then((successMessage) => {
+    console.log("From Callback " + successMessage)
+  });
+
+//Console log after calling the promise
+  console.log("After calling promise");
+
+
 //Get book details based on ISBN using Promise Callbacks
 public_users.get('/promise/isbn/:isbn', function (req, res) {
     const isbn = req.params.isbn;

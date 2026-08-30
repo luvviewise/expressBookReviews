@@ -11,17 +11,34 @@ const isValid = (username)=>{
 let userswithsamename = users.filter((user) =>{
     return (user.username === username);
 });
-return userswithsamename.length > 0; //Returns true if username is avaiable
+return userswithsamename.length === 0; //Returns true if username is avaiable
 }
+
 //Check if username and password match any registered user
 const authenticatedUser = (username,password) => { 
 //write code to check if username and password match the one we have in records.
 
-let validusers =users.filter((user) => {
-    return (user.username === username && user.password === password);
-});
-return validusers.length > 0;
-}
+return users.some(user => user.username === username && user.password === password);
+};
+
+
+//Verify Token
+const verifyToken = (req, res, next) => {
+    const token = req.session.authorization?.accessToken;
+
+    if (!token) {
+        return res.status(403).json({ message: "No token provided" });
+    }
+
+    jwt.verify(token, "access", (err, decoded) => {
+        if (err) {
+            return res.status(403).json({ message: "Invalid token" });
+        }
+
+        req.user = { username: decoded.data };
+        next();
+    });
+};
 
 //only registered users can login
 //Login route for registered users
@@ -78,6 +95,7 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     return res.status(200).json({ message: `Review for ISBN ${isbn} successfully posted.`});
 });
 
+//Get reviews for books
 regd_users.get('/review/:isbn', (req, res) => {
 const isbn = req.params.isbn;
   
@@ -95,7 +113,7 @@ const isbn = req.params.isbn;
     return res.json(books[isbn].reviews);
   });
   
-  
+
 // Delete a book review
 regd_users.delete("/auth/review/:isbn", (req, res) => {
     const isbn = req.params.isbn;
@@ -117,3 +135,4 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
 module.exports.users = users;
+module.exports.verifyToken = verifyToken;
