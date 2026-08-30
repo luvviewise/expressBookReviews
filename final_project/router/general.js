@@ -63,7 +63,7 @@ public_users.get('/author/:author',function (req, res) {
   let filteredBooks = [];
 
   for (let key in books) {
-      if (books[key].author === author) {
+      if (books[key].author.toLowerCase() === author.toLowerCase()) {
           filteredBooks.push(books[key]);
       }
   }
@@ -82,7 +82,7 @@ public_users.get('/title/:title',function (req, res) {
   let filteredBooks = [];
 
   for (let key in books) {
-      if (books[key].title === title) {
+      if (books[key].title.toLowerCase() === title.toLowerCase()) {
           filteredBooks.push(books[key]);
       }
   }
@@ -114,8 +114,32 @@ public_users.get('/async/books', async function (req, res) {
       return res.status(500).json({ message: "Error" });
     }
   });
+
+// Get book details based on author using Async-Await/Promises
+public_users.get('/async/author/:author', function (req, res) {
+    const author = req.params.author;
+    axios.get(`http://localhost:5000/author/${author}`)
+        .then((response) => {
+            return res.status(200).send(JSON.stringify(response.data, null, 4));
+        })
+        .catch((err) => {
+            return res.status(404).json({ message: "Author not found" });
+        });
+});
+
+// Get book details based on title using Async-Await/Promises
+public_users.get('/async/title/:title', function (req, res) {
+    const title = req.params.title;
+    axios.get(`http://localhost:5000/title/${title}`)
+        .then((response) => {
+            return res.status(200).send(JSON.stringify(response.data, null, 4));
+        })
+        .catch((err) => {
+            return res.status(404).json({ message: "Title not found" });
+        });
+});
   
-  //Get book details based on ISBN using Promise Callbacks
+//Get book details based on ISBN using Promise Callbacks
 public_users.get('/promise/isbn/:isbn', function (req, res) {
     const isbn = req.params.isbn;
   

@@ -95,8 +95,7 @@ const isbn = req.params.isbn;
     return res.json(books[isbn].reviews);
   });
   
-
-
+  
 // Delete a book review
 regd_users.delete("/auth/review/:isbn", (req, res) => {
     const isbn = req.params.isbn;
